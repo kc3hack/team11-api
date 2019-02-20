@@ -164,10 +164,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Scores'
-        links:
-          $ref: '#/components/schemas/Links'
-        meta:
-          $ref: '#/components/schemas/Meta'
 
     Tatekan:
       type: object
