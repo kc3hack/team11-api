@@ -1,0 +1,277 @@
+openapi: 3.0.0
+
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/gammaaex/kc3-team11/1.0.0
+
+info:
+  description: Team11のAPIです
+  version: "1.0.0"
+  title: Team11 API
+
+tags:
+  - name: scores
+    description: ゲームのランキングについてのAPIです
+  - name: tatekans
+    description: 立て看板についてのAPIです
+    
+paths:
+  /scores:
+    get:
+      tags:
+        - scores
+      summary: スコアの一覧を取得します
+      parameters:
+        - $ref: '#/components/parameters/userType'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          $ref: '#/components/responses/ScoresWithPaging'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - scores
+      summary: 単一のスコアを登録します
+      parameters:
+        - $ref: '#/components/parameters/userType'
+      requestBody:
+        $ref: '#/components/requestBodies/Score'
+      responses:
+        '200':
+          $ref: '#/components/responses/Score'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tatekans:
+    get:
+      tags:
+        - tatekans
+      summary: タテカンの画像一覧を取得します
+      parameters:
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          $ref: '#/components/responses/Tatekans'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - tatekans
+      summary: 単一のタテカンを登録します
+      requestBody:
+        $ref: '#/components/requestBodies/Tatekan'
+      responses:
+        '200':
+          $ref: '#/components/responses/Tatekan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Uri:
+      type: string
+      format: uri
+      example: https://www.example.com
+  
+    Png:
+      type: string
+      format: binary  
+  
+    Int32:
+      type: integer
+      format: int32
+  
+    UserType:
+      type: string
+      enum:
+        - admin
+        - student
+  
+    Score:
+      type: object
+      required:
+        - username
+        - value
+      properties:
+        username:
+          type: string
+        value:
+          $ref: '#/components/schemas/Int32'
+        
+    Scores:
+      type: array
+      items:
+        $ref: '#/components/schemas/Score'
+      minItems: 1
+      maxItems: 30
+
+    Links:
+      type: object
+      required:
+        - first
+        - last
+        - prev
+        - next
+      properties:
+        first:
+          $ref: '#/components/schemas/Uri'
+        last:
+          $ref: '#/components/schemas/Uri'
+        prev:
+          $ref: '#/components/schemas/Uri'
+        next:
+          $ref: '#/components/schemas/Uri'
+
+    Meta:
+      type: object
+      required:
+        - current_page
+        - from
+        - last_page
+        - path
+        - per_page
+        - to
+        - total
+      properties:
+        current_page:
+          $ref: '#/components/schemas/Int32'
+        from:
+          $ref: '#/components/schemas/Uri'
+        last_page:
+          $ref: '#/components/schemas/Int32'
+        path:
+          $ref: '#/components/schemas/Int32'
+        per_page:
+          $ref: '#/components/schemas/Int32'
+        to:
+          $ref: '#/components/schemas/Int32'
+        total:
+          $ref: '#/components/schemas/Int32'
+
+    ScoresWithPaging:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Scores'
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    Tatekan:
+      type: object
+      required:
+        - uri
+      properties:
+        uri:
+          $ref: '#/components/schemas/Uri'
+
+    Tatekans:
+      type: array
+      items:
+        $ref: '#/components/schemas/Tatekan'
+      minItems: 15
+      maxItems: 15
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          $ref: '#/components/schemas/Int32'
+        message:
+          type: string
+
+  parameters:
+    userType:
+      in: query
+      name: user_type
+      description: ユーザーの種類を指定します
+      required: true
+      schema:
+        $ref: '#/components/schemas/UserType'
+        
+    page:
+      in: query
+      name: page
+      description: ページングを指定します
+      required: false
+      schema:
+        $ref: '#/components/schemas/Int32'
+
+  requestBodies:
+    Score:
+      description: スコアを登録するためのリクエストデータです
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Score'
+
+    Tatekan:
+      description: タテカンを登録するためのリクエストデータです
+      content:
+        image/png:
+          schema:
+            $ref: '#/components/schemas/Png'
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Score:
+      description: 単一のスコアです
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Score'
+  
+    ScoresWithPaging:
+      description: スコアの一覧です
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ScoresWithPaging'
+            
+    Tatekan:
+      description: 単一のタテカンです
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Tatekan'
+            
+    Tatekans:
+      description: タテカンの一覧です
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Tatekans'
