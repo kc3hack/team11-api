@@ -36,8 +36,6 @@ paths:
       tags:
         - scores
       summary: 単一のスコアを登録します
-      parameters:
-        - $ref: '#/components/parameters/userType'
       requestBody:
         $ref: '#/components/requestBodies/Score'
       responses:
@@ -102,11 +100,14 @@ components:
       required:
         - username
         - value
+        - userType
       properties:
         username:
           type: string
         value:
           $ref: '#/components/schemas/Int32'
+        user_type:
+          $ref: '#/components/schemas/UserType'
         
     Scores:
       type: array
